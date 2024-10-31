@@ -72,7 +72,7 @@ namespace BasicRestaurantWebsite.Data
                 },
                 new Product
                 {
-                    ProductId = 1,
+                    ProductId = 2,
                     Name = "Chicken Taco",
                     Description = "A delicious chicken taco",
                     Price = 1.99m,
@@ -81,7 +81,7 @@ namespace BasicRestaurantWebsite.Data
                 },
                 new Product
                 {
-                    ProductId = 1,
+                    ProductId = 3,
                     Name = "Fish Taco",
                     Description = "A delicious fish taco",
                     Price = 3.50m,
