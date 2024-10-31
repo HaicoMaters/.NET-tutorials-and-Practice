@@ -39,7 +39,75 @@ namespace BasicRestaurantWebsite.Data
                 .HasForeignKey(pi => pi.IngredientId);
 
             //Seed Data
-            
+
+                //Categories
+            builder.Entity<Category>().HasData(
+                new Category { CategoryId = 1, Name = "Appetizer"},
+                new Category { CategoryId = 2, Name = "Entree"},
+                new Category { CategoryId = 3, Name = "Side Dish"},
+                new Category { CategoryId = 4, Name = "Dessert"},
+                new Category { CategoryId = 5, Name = "Beverage"}
+                );
+
+                // Ingredients
+            builder.Entity<Ingredient>().HasData(
+                new Ingredient { IngredientId = 1, Name = "Beef"},
+                new Ingredient { IngredientId = 2, Name = "Chicken"},
+                new Ingredient { IngredientId = 3, Name = "Fish"},
+                new Ingredient { IngredientId = 4, Name = "Tortilla"},
+                new Ingredient { IngredientId = 5, Name = "Lettuce"},
+                new Ingredient { IngredientId = 6, Name = "Tomato"}
+                );
+
+                //Products
+            builder.Entity<Product>().HasData(
+                new Product
+                {
+                    ProductId = 1,
+                    Name = "Beef Taco",
+                    Description = "A delicious beef taco",
+                    Price = 2.50m,
+                    Stock = 200,
+                    CategoryId = 2
+                },
+                new Product
+                {
+                    ProductId = 1,
+                    Name = "Chicken Taco",
+                    Description = "A delicious chicken taco",
+                    Price = 1.99m,
+                    Stock = 100,
+                    CategoryId = 2
+                },
+                new Product
+                {
+                    ProductId = 1,
+                    Name = "Fish Taco",
+                    Description = "A delicious fish taco",
+                    Price = 3.50m,
+                    Stock = 75,
+                    CategoryId = 2
+                }
+                );
+
+                //ProductIngredients
+            builder.Entity<ProductIngredient>().HasData(
+                // Beef taco
+                new ProductIngredient { ProductId = 1, IngredientId = 1},
+                new ProductIngredient { ProductId = 1, IngredientId = 4},
+                new ProductIngredient { ProductId = 1, IngredientId = 5},
+                new ProductIngredient { ProductId = 1, IngredientId = 6},
+                //Chicken taco
+                new ProductIngredient { ProductId = 2, IngredientId = 2 },
+                new ProductIngredient { ProductId = 2, IngredientId = 4 },
+                new ProductIngredient { ProductId = 2, IngredientId = 5 },
+                new ProductIngredient { ProductId = 2, IngredientId = 6 },
+                //Fish taco
+                new ProductIngredient { ProductId = 3, IngredientId = 3 },
+                new ProductIngredient { ProductId = 3, IngredientId = 4 },
+                new ProductIngredient { ProductId = 3, IngredientId = 5 },
+                new ProductIngredient { ProductId = 3, IngredientId = 6 }
+                );
         }
     }
 }
