@@ -19,6 +19,9 @@
 				<td>
 					@Html.DisplayFor(modelItem => i.Name)
 				</td>
+				<td>
+					<a asp-action="Details" asp-route-id="@i.IngredientId">Details</a>
+				</td>
 			</tr>
 		}
 	</tbody>

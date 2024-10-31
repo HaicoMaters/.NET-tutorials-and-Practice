@@ -1,4 +1,5 @@
-﻿using BasicRestaurantWebsite.Data;
+﻿using System.Net.WebSockets;
+using BasicRestaurantWebsite.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace BasicRestaurantWebsite.Models
@@ -29,9 +30,25 @@ namespace BasicRestaurantWebsite.Models
             return await _dbSet.ToListAsync();
         }
 
-        public Task<T> GetByIdAsync(int id, QueryOptions<T> options)
+        public async Task<T> GetByIdAsync(int id, QueryOptions<T> options)
         {
-            throw new NotImplementedException();
+            IQueryable<T> query = _dbSet;
+            if (options.HasWhere)
+            {
+                query = query.Where(options.Where);
+            }
+            if (options.HasOrderBy)
+            {
+                query = query.OrderBy(options.OrderBy);
+            }
+            foreach (string include in options.GetIncludes())
+            {
+                query = query.Include(include);
+            }
+
+            var key = _context.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.FirstOrDefault();
+            string primaryKeyName = key?.Name;
+            return await query.FirstOrDefaultAsync(e => EF.Property<int>(e, primaryKeyName) == id);
         }
 
         public Task UpdateAsync(T entity)
