@@ -68,7 +68,8 @@ namespace BasicRestaurantWebsite.Data
                     Description = "A delicious beef taco",
                     Price = 2.50m,
                     Stock = 200,
-                    CategoryId = 2
+                    CategoryId = 2,
+                    ImageUrl = "beeftaco.jpg"
                 },
                 new Product
                 {
@@ -77,7 +78,8 @@ namespace BasicRestaurantWebsite.Data
                     Description = "A delicious chicken taco",
                     Price = 1.99m,
                     Stock = 100,
-                    CategoryId = 2
+                    CategoryId = 2,
+                    ImageUrl = "chickentaco.jpg"
                 },
                 new Product
                 {
@@ -86,8 +88,9 @@ namespace BasicRestaurantWebsite.Data
                     Description = "A delicious fish taco",
                     Price = 3.50m,
                     Stock = 75,
-                    CategoryId = 2
-                }
+                    CategoryId = 2,
+					ImageUrl = "fishtaco.jpg"
+				}
                 );
 
                 //ProductIngredients
