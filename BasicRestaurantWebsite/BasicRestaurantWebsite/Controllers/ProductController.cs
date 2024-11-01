@@ -42,10 +42,10 @@ namespace BasicRestaurantWebsite.Controllers
                     Includes = "ProductIngredients.Ingredient, Category",
                     Where = p => p.ProductId == id
                 });
-				ViewBag.Operation = "Edit";
-				return View(product);
-			}
-		}
+                ViewBag.Operation = "Edit";
+                return View(product);
+            }
+        }
 
         [HttpPost]
         public async Task<IActionResult> AddEdit(Product product, int[] ingredientIds, int catId)
@@ -54,70 +54,85 @@ namespace BasicRestaurantWebsite.Controllers
             ViewBag.Categories = await categories.GetAllAsync();
             if (ModelState.IsValid)
             {
-                    if (product.ImageFile != null)
+                if (product.ImageFile != null)
+                {
+                    // Upload of the image
+                    string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + product.ImageFile.FileName;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
                     {
-                        // Upload of the image
-                        string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
-                        string uniqueFileName = Guid.NewGuid().ToString() + "_" + product.ImageFile.FileName;
-                        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                        using (var fileStream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await product.ImageFile.CopyToAsync(fileStream);
-                        }
-                        product.ImageUrl = uniqueFileName;
+                        await product.ImageFile.CopyToAsync(fileStream);
+                    }
+                    product.ImageUrl = uniqueFileName;
+                }
+
+                // Add Operation
+                if (product.ProductId == 0)
+                {
+                    product.CategoryId = catId;
+
+                    // Add Ingredients
+                    foreach (int id in ingredientIds)
+                    {
+                        product.ProductIngredients?.Add(new ProductIngredient { IngredientId = id, ProductId = product.ProductId });
                     }
 
-                    // Add Operation
-                    if (product.ProductId == 0)
+                    await products.AddAsync(product);
+                    return RedirectToAction("Index", "Product");
+                }
+                // Edit Operation
+                else
+                {
+                    // Access the product in the database
+                    var existingProduct = await products.GetByIdAsync(product.ProductId, new QueryOptions<Product> { Includes = "ProductIngredients" });
+
+                    if (existingProduct == null)
                     {
-                        product.CategoryId = catId;
-
-                        // Add Ingredients
-                        foreach (int id in ingredientIds)
-                        {
-                            product.ProductIngredients?.Add(new ProductIngredient { IngredientId = id, ProductId = product.ProductId });
-                        }
-
-                        await products.AddAsync(product);
-                        return RedirectToAction("Index", "Product");
+                        ModelState.AddModelError("", "Product not found");
+                        return View(product);
                     }
-                    // Edit Operation
-                    else
+
+                    existingProduct.Name = product.Name;
+                    existingProduct.Description = product.Description;
+                    existingProduct.Price = product.Price;
+                    existingProduct.Stock = product.Stock;
+                    existingProduct.CategoryId = catId;
+
+                    // Update product ingredients
+                    existingProduct.ProductIngredients?.Clear();
+                    foreach (int id in ingredientIds)
                     {
-                        // Access the product in the database
-                        var existingProduct = await products.GetByIdAsync(product.ProductId, new QueryOptions<Product>{Includes = "ProductIngredients"});
-                        
-                        if (existingProduct == null)
-                        {
-                            ModelState.AddModelError("", "Product not found");
-                            return View(product);
-                        }
-
-                        existingProduct.Name = product.Name;
-                        existingProduct.Description = product.Description;
-                        existingProduct.Price = product.Price;
-                        existingProduct.Stock = product.Stock;
-                        existingProduct.CategoryId = catId;
-
-                        // Update product ingredients
-                        existingProduct.ProductIngredients?.Clear();
-                        foreach(int id in ingredientIds)
-                        {
-                            existingProduct.ProductIngredients?.Add(new ProductIngredient { IngredientId = id, ProductId = product.ProductId });
-                        }
-
-                        try
-                        {
-                            await products.UpdateAsync(existingProduct);
-                        }
-                        catch (Exception ex)
-                        {
-                            ModelState.AddModelError("", $"Error: {ex.GetBaseException().Message}");
-                            return View(product);
-                        }
+                        existingProduct.ProductIngredients?.Add(new ProductIngredient { IngredientId = id, ProductId = product.ProductId });
                     }
-                } 
-                return RedirectToAction("Index", "Product");
+
+                    try
+                    {
+                        await products.UpdateAsync(existingProduct);
+                    }
+                    catch (Exception ex)
+                    {
+                        ModelState.AddModelError("", $"Error: {ex.GetBaseException().Message}");
+                        return View(product);
+                    }
+                }
+            }
+            return RedirectToAction("Index", "Product");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                await products.DeleteAsync(id);
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                ModelState.AddModelError("", "Product not found. ");
+                return RedirectToAction("Index");
+            }
         }
     }
 }
