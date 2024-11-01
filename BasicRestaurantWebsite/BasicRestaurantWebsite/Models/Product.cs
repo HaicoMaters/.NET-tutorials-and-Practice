@@ -5,6 +5,11 @@ namespace BasicRestaurantWebsite.Models
 {
     public class Product
     {
+        public Product()
+        {
+            ProductIngredients = new List<ProductIngredient>();
+        }
+
         public int ProductId { get; set; } //PK
         public string? Name { get; set; }
         public string? Description { get; set; }
