@@ -94,10 +94,56 @@ namespace BasicRestaurantWebsite.Controllers
 			return View(model);
         }
 
-        public IActionResult Index()
+		[Authorize]
+		[HttpPost]
+		public async Task<IActionResult> PlaceOrder()
 		{
-			return View();
+			var model = HttpContext.Session.Get<OrderViewModel>("OrderViewModel");
+			if (model == null || model.OrderItems.Count == 0)
+			{
+				return RedirectToAction("Create");
+			}
+
+			// Create a new Order entity
+			Order order = new Order
+			{
+				OrderDate = DateTime.Now,
+				TotalAmount = model.TotalAmount,
+				UserID = _userManager.GetUserId(User)
+			};
+
+			// Add OrderItems to the Order entity
+			foreach (var item in model.OrderItems) 
+			{
+				order.OrderItems.Add(new OrderItem 
+				{ 
+					ProductId = item.ProductId,
+					Quantity = item.Quantity,
+					Price = item.Price
+				});
+			}
+
+			// Save Order Entity to database
+			await _orders.AddAsync(order);
+
+			// Clear the OrderViewModel from session or other state management
+			HttpContext.Session.Remove("OrderViewModel");
+
+			return RedirectToAction("ViewOrders");
 		}
-	
+
+		[Authorize]
+		[HttpGet]
+		public async Task<IActionResult> ViewOrders()
+		{
+			var userId = _userManager.GetUserId(User);
+
+			var userOrders = await _orders.GetAllByIdAsync(userId, "UserID", new QueryOptions<Order>
+			{
+				Includes = "OrderItems.Product"
+			});
+
+			return View(userOrders);
+		}
 	}
 }
