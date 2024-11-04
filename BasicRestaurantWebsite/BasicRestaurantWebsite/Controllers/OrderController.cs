@@ -34,20 +34,70 @@ namespace BasicRestaurantWebsite.Controllers
 			return View(model);
 		}
 
-		/*[Authorize]
+		[Authorize]
 		[HttpPost]
 		public async Task<IActionResult>AddItem(int prodId, int prodQty)
 		{
-			var product = await _context.Procducts.FindAsync(prodId);
+			var product = await _context.Products.FindAsync(prodId);
 			if (product == null)
-			{ 
+			{
+				return NotFound();
 			}
+
+			// Retreive or create an OrderViewModel from session or other state managements
+			var model = HttpContext.Session.Get<OrderViewModel>("OrderViewModel") ?? new OrderViewModel
+			{
+				OrderItems = new List<OrderItemViewModel>(),
+				Products = await _products.GetAllAsync()
+			};
+
+			// Check if the product is already in the order
+			var existingItem = model.OrderItems.FirstOrDefault(oi => oi.ProductId == prodId);
+
+			// If product is in order update quantity
+			if (existingItem != null)
+			{
+				existingItem.Quantity += prodQty;
+			}
+			else
+			{
+				model.OrderItems.Add(new OrderItemViewModel
+				{
+					ProductId = product.ProductId,
+					Price = product.Price,
+					Quantity = prodQty,
+					ProductName = product.Name
+				});
+			}
+
+			// Update the total amount
+			model.TotalAmount = model.OrderItems.Sum(oi => oi.Price * oi.Quantity);
+
+			//Save updated OrderViewModel to session
+			HttpContext.Session.Set("OrderViewModel", model);
+
+			return RedirectToAction("Create", model);
 		}
 
-		public IActionResult Index()
+        [Authorize]
+        [HttpGet]
+		public async Task<IActionResult> Cart()
+		{
+			// Retrieve the OrderViewModel from session or other state management
+			var model = HttpContext.Session.Get<OrderViewModel>("OrderViewModel");
+
+			if (model == null || model.OrderItems.Count == 0)
+			{
+				return RedirectToAction("Create");
+			}
+
+			return View(model);
+        }
+
+        public IActionResult Index()
 		{
 			return View();
 		}
-	*/
+	
 	}
 }
