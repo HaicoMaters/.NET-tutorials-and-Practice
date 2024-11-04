@@ -1,7 +1,12 @@
 ﻿namespace BasicRestaurantWebsite.Models
 {
-    public class Order
+    public class Order // Domain Model
     {
+        public Order()
+        {
+            OrderItems = new List<OrderItem>();
+        }
+
         public int OrderId { get; set; } //PK
         public DateTime OrderDate { get; set; }
         public string? UserID { get; set; } // Foreign Key

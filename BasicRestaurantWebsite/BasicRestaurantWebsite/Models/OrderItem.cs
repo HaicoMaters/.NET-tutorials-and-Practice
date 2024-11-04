@@ -1,6 +1,6 @@
 ﻿namespace BasicRestaurantWebsite.Models
 {
-    public class OrderItem
+    public class OrderItem // Domain Model
     {
         public int OrderItemId { get; set; } // PK
         public int OrderID { get; set; }
