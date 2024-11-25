@@ -1,4 +1,7 @@
-﻿@model IEnumerable<Product>
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@model IEnumerable<Product>
 
 @{
 	ViewBag.Title = "Restaurant Menu Items ";
@@ -17,7 +20,10 @@
 }
 
 <h2>Restaurant Menu Items</h2>
-<a asp-action="AddEdit" asp-controller="Product" class="btn btn-primary"> Create New Item </a>
+@if (User.IsInRole("Admin"))
+{
+	<a asp-action="AddEdit" asp-controller="Product" class="btn btn-primary"> Create New Item </a>
+}
 
 <div class="row">
 	@foreach(Product prod in Model)
@@ -32,10 +38,12 @@
 						<p class="card-text">@prod.Description</p>
 						<p class="card-text">@prod.Price.ToString("C")</p>
 						<p class="card-text">Quantitiy in Stock: @prod.Stock</p>
-						<a class="btn btn-info" asp-controller="Product" asp-action="AddEdit" asp-route-id="@prod.ProductId"><i class="bi bi-pencil-fill">Edit</i></a>
-						<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="@GetDeleteModalId(prod)">
-							<i class="bi bi-trash">Delete</i>
-						</button>
+						@if (User.IsInRole("Admin"))
+						{
+							<a class="btn btn-info" asp-controller="Product" asp-action="AddEdit" asp-route-id="@prod.ProductId"><i class="bi bi-pencil-fill">Edit</i></a>
+							<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="@GetDeleteModalId(prod)">
+								<i class="bi bi-trash">Delete</i>
+							</button>
 						<div class="modal fade" id="@GetModalId(prod)" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 							<div class="modal-dialog">
 								<div class="modal-content">
@@ -50,6 +58,7 @@
 								</div>
 							</div>
 						</div>
+						}
 					</div>
 				</div>
 			</form>
