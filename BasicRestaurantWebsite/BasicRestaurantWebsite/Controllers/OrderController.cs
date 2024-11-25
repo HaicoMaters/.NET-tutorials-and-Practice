@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BasicRestaurantWebsite.Controllers
 {
+	[Authorize(Roles = "User")]
 	public class OrderController : Controller
 	{
 		private readonly ApplicationDbContext _context;
@@ -21,7 +22,6 @@ namespace BasicRestaurantWebsite.Controllers
 			_orders = new Repository<Order>(context);
 		}
 
-		[Authorize]
 		[HttpGet]
 		public async Task<IActionResult> Create()
 		{
@@ -34,7 +34,6 @@ namespace BasicRestaurantWebsite.Controllers
 			return View(model);
 		}
 
-		[Authorize]
 		[HttpPost]
 		public async Task<IActionResult>AddItem(int prodId, int prodQty)
 		{
@@ -79,7 +78,6 @@ namespace BasicRestaurantWebsite.Controllers
 			return RedirectToAction("Create", model);
 		}
 
-        [Authorize]
         [HttpGet]
 		public async Task<IActionResult> Cart()
 		{
@@ -94,7 +92,6 @@ namespace BasicRestaurantWebsite.Controllers
 			return View(model);
         }
 
-		[Authorize]
 		[HttpPost]
 		public async Task<IActionResult> PlaceOrder()
 		{
@@ -132,7 +129,6 @@ namespace BasicRestaurantWebsite.Controllers
 			return RedirectToAction("ViewOrders");
 		}
 
-		[Authorize]
 		[HttpGet]
 		public async Task<IActionResult> ViewOrders()
 		{

@@ -1,5 +1,6 @@
 ﻿using BasicRestaurantWebsite.Data;
 using BasicRestaurantWebsite.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BasicRestaurantWebsite.Controllers
@@ -25,6 +26,7 @@ namespace BasicRestaurantWebsite.Controllers
             return View(await products.GetAllAsync());
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> AddEdit(int id)
         {
@@ -47,6 +49,7 @@ namespace BasicRestaurantWebsite.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddEdit(Product product, int[] ingredientIds, int catId)
         {
@@ -120,6 +123,7 @@ namespace BasicRestaurantWebsite.Controllers
             return RedirectToAction("Index", "Product");
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {

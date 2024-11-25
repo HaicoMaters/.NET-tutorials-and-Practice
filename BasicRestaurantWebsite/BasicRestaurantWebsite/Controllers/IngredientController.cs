@@ -1,5 +1,6 @@
 ﻿using BasicRestaurantWebsite.Data;
 using BasicRestaurantWebsite.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -24,12 +25,14 @@ namespace BasicRestaurantWebsite.Controllers
             return View(await ingredients.GetByIdAsync(id, new QueryOptions<Ingredient>() {Includes="ProductIngredients.Product"}));
         }
         // Ingredient/Create
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IngredientId, Name")] Ingredient ingredient)
@@ -43,12 +46,14 @@ namespace BasicRestaurantWebsite.Controllers
         }
 
         // Ingredient/Delete
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
             return View(await ingredients.GetByIdAsync(id, new QueryOptions<Ingredient> { Includes = "ProductIngredients.Product" }));
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Ingredient ingredient)
@@ -58,13 +63,15 @@ namespace BasicRestaurantWebsite.Controllers
         }
 
         // Ingredient/Edit
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
 			return View(await ingredients.GetByIdAsync(id, new QueryOptions<Ingredient> { Includes = "ProductIngredients.Product" }));
 		}
 
-		[HttpPost]
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Edit(Ingredient ingredient)
 		{
